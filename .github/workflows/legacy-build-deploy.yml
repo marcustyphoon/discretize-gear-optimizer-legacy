@@ -3,21 +3,33 @@ name: '[Old] build and deploy'
 on:
   push:
     branches:
-      - legacy-optimizer
+      - main
   workflow_dispatch:
 
 env:
   NODE_VERSION: 18
+  PAGES_PROJECT_NAME: discretize-gear-optimizer-legacy
+
+concurrency:
+  group: 'deploy'
+  cancel-in-progress: true
   
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      deployments: write
+      pages: write
+      id-token: write
     if: "!contains(github.event.head_commit.message, 'skip ci')"
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
@@ -29,8 +41,12 @@ jobs:
 
       - run: yarn build
 
-      - run: yarn deploy
-        env:
-          AWS_DEFAULT_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Setup Github Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
