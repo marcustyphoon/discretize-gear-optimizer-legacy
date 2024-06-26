@@ -10,3 +10,21 @@ updates:
       github-actions:
         patterns:
           - '*'
+
+  - package-ecosystem: npm
+    directory: /
+    labels: [ ]
+    schedule:
+      interval: monthly
+      time: '17:00'
+    ignore:
+      - dependency-name: '*'
+        update-types: 
+          - version-update:semver-major
+    groups:
+      npm-dependencies:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
