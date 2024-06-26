@@ -28,17 +28,21 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup NodeJS
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v4
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: yarn
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
 
-      - run: yarn install --frozen-lockfile
-
-      - run: yarn build
+      - name: Build
+        run: pnpm build
 
       - name: Setup Github Pages
         uses: actions/configure-pages@v5
