@@ -8,7 +8,6 @@ on:
 
 env:
   NODE_VERSION: 18
-  PAGES_PROJECT_NAME: discretize-gear-optimizer-legacy
 
 concurrency:
   group: 'deploy'
